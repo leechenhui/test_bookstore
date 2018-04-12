@@ -38,6 +38,11 @@ INSTALLED_APPS = (
 	'users',
 	'books',
 	'tinymce',  # 添加一个编辑器应用,就可以在模型类中使用编辑器属性设置字段在后台显示的样式了
+	'cart',
+	'order',
+	'comments',  # 还没有实现
+	'haystack',  # 添加全文检索应用
+	'users.templatetags.filters',  # 增加过滤器功能
 )
 
 MIDDLEWARE_CLASSES = (
@@ -132,3 +137,32 @@ TINYMCE_DEFAULT_CONFIG = {
 
 # 将上传多媒体文件的路径放入查询根目录
 MEDIA_ROOT = os.path.join(BASE_DIR, 'static')
+
+# 配置邮件相关参数
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.163.com'
+EMAIL_PORT = 25
+EMAIL_HOST_USER = 'lichenhui_2013@163.com'
+EMAIL_HOST_PASSWORD = 'lch15011087415'
+EMAIL_FROM = 'shangguigu<lichenhui_2013@163.com>'
+
+# 全文检索配置
+HAYSTACK_CONNECTIONS = {
+	'default': {
+		# 使用whoosh引擎
+		'ENGINE': 'haystack.backends.whoosh_cn_backend.WhooshEngine',
+		# 'ENGINE': 'haystack.backends.whoosh_backend.WhooshEngine',
+		# 索引文件路径
+		'PATH': os.path.join(BASE_DIR, 'whoosh_index'),
+	}
+}
+
+# 当添加,修改,删除数据时,自动生成索引
+HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
+
+# 指定搜索结果(每页的条数)
+HAYSTACK_SEARCH_RESULTS_PER_PAGE = 6
+
+
+
+

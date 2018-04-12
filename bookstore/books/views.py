@@ -3,12 +3,16 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import render, redirect
 from books.models import Books
 from books.enums import *
+from django.views.decorators.cache import cache_page
+from django_redis import get_redis_connection
 
 
 # Create your views here.
 
 
 # 显示首页
+# 使用redis缓存首页页面
+# @cache_page(60*15)
 def index(request):
 	# 查询每个种类的3个新品和4个销量最好的商品
 	python_new = Books.objects.get_books_by_type(PYTHON, 3, sort='new')
@@ -52,6 +56,17 @@ def detail(request, book_id):
 
 	# 如果书籍存在根据书籍的类型id找到那一类型的所有数,并且获取两本最新上架的书
 	books_li = Books.objects.get_books_by_type(type_id=book.type_id, limit=2, sort='new')
+
+	if request.session.has_key('islogin'):
+		# 用户已经登录,记录浏览记录
+		con = get_redis_connection('default')
+		key = 'history_%d' % request.session.get('passport_id')
+		# 先从redis列表中移除book.id
+		con.lrem(key, 0, book.id)
+		con.lpush(key, book.id)
+		# 保存用户最近浏览的5个商品
+		con.ltrim(key, 0, 4)
+
 	# 将这本数和新书列表渲染到书籍详情页面
 	context = {'book': book, 'books_li': books_li}
 	return render(request, 'books/detail.html', context)
@@ -59,7 +74,6 @@ def detail(request, book_id):
 
 # 商品列表页面
 def list(request, type_id, page):
-
 	# 获取排序方式(默认/价格/热度)
 	sort = request.GET.get('sort', 'default')
 
@@ -118,4 +132,4 @@ def list(request, type_id, page):
 		'pages': pages,
 	}
 
-	return render(request, 'books/list.html',context)
+	return render(request, 'books/list.html', context)

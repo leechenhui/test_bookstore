@@ -1,19 +1,35 @@
 {% extends 'books/list.html' %}
 {% load staticfiles %}
 {% block title %}尚硅谷书城-商品详情{% endblock title %}
-
 {% block topfiles %}
+<style type="text/css">
+    .comment{
+        background-color: #c40000;
+        color:#fff;
+        margin-left: 10px;
+        position: relative;
+        z-index: 10;
+        display: inline-block;
+        width: 178px;
+        height: 38px;
+        border:1px solid #c40000;
+        font-size: 14px;
+        line-height: 38px;
+        text-align: center;
+    }
+</style>
 <script>
 $(function () {
+    // 计算总价
     update_total_price();
     function update_total_price() {
         //获取商品的数量和价格
         books_price = $('.show_price').children('em').text();
-        boos_count = $('.num_show').val();
+        books_count = $('.num_show').val();
         //计算商品的总价
         books_price = parseFloat(books_price);
-        boos_count = parseInt(boos_count);
-        total_price = books_price * boos_count;
+        books_count = parseInt(books_count);
+        total_price = books_price * books_count;
         //设置商品总价
         $('.total').children('em').text(total_price.toFixed(2) + '元')
     }
@@ -26,25 +42,32 @@ $(function () {
         books_count = parseInt(books_count) + 1;
         //重新设置值
         $('.num_show').val(books_count);
+        //计算总价
         update_total_price()
     });
 
     //商品减少按钮点击事件
     $('.minus').click(function () {
+        //获取商品的数量
         books_count = $('.num_show').val();
+        //减1
         books_count = parseInt(books_count) - 1;
         if (books_count == 0){
             books_count = 1
         }
+        //重新设置值
         $('.num_show').val(books_count);
+        //计算总价
         update_total_price()
     });
 
     //手动输入
     $('.num_show').blur(function () {
+        //获取商品得的数量
         books_count = $(this).val();
+        //数据校验(为非数字,去空格后为0,数量小于等于0)
         if(isNaN(books_count) || books_count.trim().length == 0 || parseInt(books_count) <= 0){
-            books_count =1
+            books_count = 1
         }
         $('.num_show').val(parseInt(books_count));
         update_total_price()
@@ -52,7 +75,6 @@ $(function () {
 })
 </script>
 {% endblock topfiles %}
-
 {% block body %}
 <div class="breadcrumb">
     <a href="#">全部分类</a>
@@ -84,6 +106,17 @@ $(function () {
             {% csrf_token %}
             <a href="javascript:;" class="buy_btn">立即购买</a>
             <a href="javascript:;" books_id="{{ book.id }}" class="add_cart" id="add_cart">加入购物车</a>
+            <a href="#" id="write-comment" class="comment">我要写评论</a>
+        </div>
+        <div style="display:flex;" id="comment-input" data-bookid="{{ book.id }}" data-userid="{{ request.session.passport_id }}">
+            <div>
+                <input type="text" placeholder="评论内容">
+            </div>
+            <div id="submit-comment">
+                <button>
+                    提交评论
+                </button>
+            </div>
         </div>
     </div>
 </div>
@@ -117,7 +150,6 @@ $(function () {
                 <dd>{{ book.detail | safe }}</dd>
             </dl>
         </div>
-
     </div>
 </div>
 <div class="add_jump"></div>
@@ -125,15 +157,16 @@ $(function () {
 {% block bottomfiles %}
 {#<script type="text/javascript" src="/static/js/jquery-1.12.2.js"></script>#}
 <script type="text/javascript">
+    //add_cart加入购物车按钮的的偏移量
     var $add_x = $('#add_cart').offset().top;
     var $add_y = $('#add_cart').offset().left;
-
+    //顶端购物车展示框的偏移量
     var $to_x = $('#show_count').offset().top;
     var $to_y = $('#show_count').offset().left;
 
     {# 点击加入购物车按钮时触发的函数 #}
     $('#add_cart').click(function(){
-        {# 获取商品的id和数量 #}
+        {# 获取商品id和商品数量 #}
         books_id = $(this).attr('books_id');
         books_count = $('.num_show').val();
         csrf = $('input[name="csrfmiddlewaretoken"]').val();
@@ -164,6 +197,28 @@ $(function () {
                 alert(data.errmsg)
             }
         });
-    })
+    });
+
+{#    $.ajax({#}
+{#        url:'/comment/comment/' + $('#comment-input').data('bookid'),#}
+{#        success:function (res) {#}
+{#            if(res.code == 200){#}
+{#                var data = res.data;#}
+{#                console.log(data);#}
+{#                var div_head = '<div>';#}
+{#                var div_tail = '</div>';#}
+{#                var dom_element = '';#}
+{#                for(i = 0; i < data.length; i++){#}
+{#                    var head = '<div>';#}
+{#                    var tail = '</div>';#}
+{#                    var temp = head + '<span>' + data[i].user_id + '</span>' + '<br>' + '<span>' + data[i].content + '</span>' + tail;#}
+{#                    dom_element += temp;#}
+{#                }#}
+{#                dom_element = div_head + dom_element + div_tail;#}
+{#                $('#book_comment').append(dom_element);#}
+{#            }#}
+{#        }#}
+{#    });#}
+
 </script>
 {% endblock bottomfiles %}

@@ -17,9 +17,12 @@ from django.conf.urls import include, url
 from django.contrib import admin
 
 urlpatterns = [
-    url(r'^admin/', include(admin.site.urls)),
-    url(r'^user/',include('users.urls',namespace='user')),
-	url(r'^tinymce/',include('tinymce.urls')), #在项目路由中配置编辑器的路由
-	url(r'^',include('books.urls',namespace='books')),
-	url(r'^cart/',include('cart.urls',namespace='cart')),
+	url(r'^admin/', include(admin.site.urls)),
+	url(r'^user/', include('users.urls', namespace='user')),
+	url(r'^tinymce/', include('tinymce.urls')),  # 在项目路由中配置编辑器的路由
+	url(r'^', include('books.urls', namespace='books')),
+	url(r'^cart/', include('cart.urls', namespace='cart')),
+	url(r'^order/', include('order.urls', namespace='order')),
+	url(r'^comment/',include('comments.urls',namespace='comment')),
+	url(r'^search/',include('haystack.urls')),
 ]
