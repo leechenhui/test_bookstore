@@ -122,6 +122,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'collect_static')
 
 # 将静态文件目录加入搜索路径
 STATICFILES_DIRS = [
@@ -163,6 +164,4 @@ HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
 # 指定搜索结果(每页的条数)
 HAYSTACK_SEARCH_RESULTS_PER_PAGE = 6
 
-
-
-
+ALIPAY_URL = 'https://openapi.alipaydev.com/gateway.do'

@@ -71,5 +71,42 @@
             </div>
 		</div>
 	</div>
-
 {% endblock body %}
+
+{% block bottomfiles %}
+    <script>
+    $(function () {
+        $('.oper_btn').click(function () {
+            order_id = $(this).attr('order_id');
+            order_status = $(this).attr('order_status');
+            csrf = $('input[name="csrfmiddlewaretoken"]').val();
+            params = {
+                'order_id':order_id,
+                'csrfmiddlewaretoken':csrf
+            };
+            if(order_status == 1){
+                $.post('/order/pay/',params,function (data) {
+                    if(data.res == 3){
+                        window.open(data.pay_url);
+                        $.post('/order/check_pay/',params,function (data) {
+                            if(data.res == 3){
+                                alert('支付成功');
+                                location.reload()
+                            }
+                            else {
+                                alert(data.errmsg)
+                            }
+                        })
+                    }
+                    else {
+                        alert(data.errmsg)
+                    }
+                })
+            }
+        })
+    })
+    </script>
+{% endblock bottomfiles %}
+
+
+

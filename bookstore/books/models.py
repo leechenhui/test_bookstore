@@ -2,6 +2,7 @@ from django.db import models
 from tinymce.models import HTMLField
 from db.base_model import BaseModel
 from books.enums import *
+from django.core.files.storage import FileSystemStorage
 # Create your models here.
 
 
