@@ -104,7 +104,9 @@ def list(request, type_id, page):
 		print(book.price)
 
 	# 总页数小于5,显示所有页码
+	# range函数计数范围不包括stop
 	if num_pages < 5:
+		# [1,...,num_pages]
 		pages = range(1, num_pages + 1)
 	# 当前页是前3页,显示前5页
 	elif page <= 3:
